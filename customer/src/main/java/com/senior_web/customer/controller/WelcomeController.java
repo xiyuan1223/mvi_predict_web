@@ -28,6 +28,10 @@ public class WelcomeController {
     public String geo() {
         return "geo";
     }
+    @RequestMapping("uploadFile")
+    public String uploadFile() {
+        return "uploadFile";
+    }
 
 }
 

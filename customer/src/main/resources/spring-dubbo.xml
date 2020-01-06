@@ -12,6 +12,7 @@
     <dubbo:protocol name="dubbo" port="20880"/>
     <dubbo:reference id="userService" check="false" interface="com.senior_web.common.service.UserService"/>
     <dubbo:reference id="jobService" check="false" interface="com.senior_web.common.service.JobService"/>
+    <dubbo:reference id="AttachmentService" check="false" interface="com.senior_web.common.service.AttachmentService"/>
 
     <dubbo:annotation package="controller"/>
 </beans>

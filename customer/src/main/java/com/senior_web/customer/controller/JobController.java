@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class JobController {
+public class JobController{
     @Resource
     @Reference(version = "1.0.0")
     private JobService jobService;

@@ -22,4 +22,5 @@
     <!-- declare the service interface to be exported -->
     <dubbo:service interface="com.senior_web.common.service.UserService" ref="userService"/>
     <dubbo:service interface="com.senior_web.common.service.JobService" ref="jobService"/>
+    <dubbo:reference id="AttachmentService" check="false" interface="com.senior_web.common.service.AttachmentService"/>
 </beans>
