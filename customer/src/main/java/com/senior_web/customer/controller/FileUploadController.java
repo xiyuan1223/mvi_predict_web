@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Map;
 @Controller
 @RequestMapping("/file")
@@ -23,10 +23,18 @@ public class FileUploadController {
 
     @RequestMapping(value="/uploadImage",method= RequestMethod.POST)
     @ResponseBody
-    public void receiveImage(@RequestPart("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, String> map = attachmentService.ckEditorUploadImage(file, request);
-//        return attachmentService.ckEditorUploadImage(file, request);
+    public void receiveImage(@RequestPart("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+
+
         try {
+            //对象流的传输需要序列化，不能直接getBytes,而应该使用ObjectOutputStrem.write()写入
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(byteArrayOutputStream);
+            oos.writeObject(file.getBytes());
+            oos.writeObject(null);
+            oos.close();
+            Map<String, String> map = attachmentService.ckEditorUploadImage(byteArrayOutputStream.toByteArray());
             PrintWriter out = response.getWriter();
             String CKEditorFuncNum = request.getParameter("CKEditorFuncNum");
             String imgUrl = map.get("url");

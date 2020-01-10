@@ -7,18 +7,34 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 @Service(version = "1.0.0")
-public class AttachmentServiceImpl implements AttachmentService {
+public class AttachmentServiceImpl implements AttachmentService, Serializable {
     @Autowired
     private Environment env;
 
     public static String newsImage = "newsImage";
 
-    public Map<String, String> ckEditorUploadImage(MultipartFile file, HttpServletRequest request) {
+    public Map<String, String> ckEditorUploadImage(byte[] bytes){
+
+        //从objectStream 中还原对象
+
+        MultipartFile file = null;
+        try {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
+            Object obj;
+            while((obj = ois.readObject())!=null){
+                file = (MultipartFile)obj;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         if(file==null || "".equals(file.getOriginalFilename().trim())) {
             return generateResult(false, "#");
         }

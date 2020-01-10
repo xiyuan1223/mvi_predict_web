@@ -19,8 +19,9 @@
     <!-- service implementation, as same as regular local bean -->
     <bean id="userService" class="com.senior_web.provider.service.impl.UserImpl"/>
     <bean id="jobService" class="com.senior_web.provider.service.impl.JobImpl"/>
+    <bean id="AttachmentService" class="com.senior_web.provider.service.impl.AttachmentServiceImpl"/>
     <!-- declare the service interface to be exported -->
     <dubbo:service interface="com.senior_web.common.service.UserService" ref="userService"/>
     <dubbo:service interface="com.senior_web.common.service.JobService" ref="jobService"/>
-    <dubbo:reference id="AttachmentService" check="false" interface="com.senior_web.common.service.AttachmentService"/>
+    <dubbo:service interface="com.senior_web.common.service.AttachmentService" ref="AttachmentService"/>
 </beans>
