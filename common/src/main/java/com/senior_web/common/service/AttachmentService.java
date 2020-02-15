@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface AttachmentService  {
 
-    public Map<String, String> ckEditorUploadImage(byte[] bytes);
+    public Map<String, String> ckEditorUploadImage(byte[] bytes,String originName);
 
 }
 

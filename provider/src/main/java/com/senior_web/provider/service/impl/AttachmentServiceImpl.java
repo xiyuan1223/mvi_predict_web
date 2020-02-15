@@ -17,34 +17,35 @@ public class AttachmentServiceImpl implements AttachmentService, Serializable {
 
     public static String newsImage = "newsImage";
 
-    public Map<String, String> ckEditorUploadImage(byte[] bytes){
+    public Map<String, String> ckEditorUploadImage(byte[] bytes,String originName){
 
         //从objectStream 中还原对象
 
-        MultipartFile file = null;
+//        File targetFile = new File("/tmp/bbb");
+        String originalName = originName;
+        Object obj = null;
         try {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
-            Object obj;
-            while((obj = ois.readObject())!=null){
-                file = (MultipartFile)obj;
-            }
+            obj = (File)ois.readObject();
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if(file==null || "".equals(file.getOriginalFilename().trim())) {
+        if(obj==null || "".equals(originName.trim())) {
             return generateResult(false, "#");
         }
-        String originalName = file.getOriginalFilename();
+
         // generate file name
         String localFileName = System.currentTimeMillis() + "-" + originalName;
         // get project path
 //        File resourcefile = new File("src/main/resources/static/");
         //传到项目所在目录同级目录下
-        File resourcefile = new File("./emi_resource");
+        File resourcefile = new File("./tmp_file");
         String projectRealPath = resourcefile.getAbsolutePath();
 //        String projectRealPath = env.getProperty("upload.path");
         // get the real path to store received images
@@ -57,11 +58,8 @@ public class AttachmentServiceImpl implements AttachmentService, Serializable {
         //上传的本地路径
         String localFilePath = realPath + File.separator + localFileName;
         try {
-            file.transferTo(new File(localFilePath));
+            ((File) obj).renameTo(new File(localFilePath));
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-            // log here
-        } catch (IOException e) {
             e.printStackTrace();
             // log here
         }
