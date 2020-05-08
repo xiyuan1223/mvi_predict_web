@@ -1,6 +1,7 @@
 package com.senior_web.customer.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.senior_web.common.service.AttachmentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,30 +15,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Map;
+import java.util.UUID;
+
 @Controller
 @RequestMapping("/file")
-public class FileUploadController implements Serializable{
+public class FileUploadController implements Serializable {
     @Resource
     @Reference(version = "1.0.0")
     AttachmentService attachmentService;
 
-    @RequestMapping(value="/uploadImage",method= RequestMethod.POST)
+    @RequestMapping(value = "/uploadImage", method = RequestMethod.POST)
     @ResponseBody
     public void receiveImage(@RequestPart("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 
-
         try {
-            File tmpMultipartFile  = new File("/tmp/tmf");
-            file.transferTo(tmpMultipartFile);
+            String fileName = file.getOriginalFilename();
 
+            String suffix = fileName.substring(fileName.lastIndexOf("."));
+            final File tmpFile = File.createTempFile(UUID.randomUUID().toString(), suffix);
             //对象流的传输需要序列化，不能直接getBytes,而应该使用ObjectOutputStrem.write()写入
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(byteArrayOutputStream);
-            oos.writeObject(tmpMultipartFile);
+            oos.writeObject(tmpFile);
 //            oos.writeObject(null);//因为是按对象读取，所以加入空对象作为结束标志
             oos.close();
 
+            deleteFile(tmpFile);
 
 
 //            byte[] bytes = byteArrayOutputStream.toByteArray();
@@ -48,7 +52,7 @@ public class FileUploadController implements Serializable{
 //                obj = (File)obj;
 //            }
 //            obj = ois.readObject();
-            Map<String, String> map = attachmentService.ckEditorUploadImage(byteArrayOutputStream.toByteArray(),file.getOriginalFilename());
+            Map<String, String> map = attachmentService.ckEditorUploadImage(byteArrayOutputStream.toByteArray(), file.getOriginalFilename());
             PrintWriter out = response.getWriter();
             String CKEditorFuncNum = request.getParameter("CKEditorFuncNum");
             String imgUrl = map.get("url");
@@ -60,5 +64,16 @@ public class FileUploadController implements Serializable{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
+
+    private void deleteFile(File... files) {
+        for (File file : files) {
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+    }
+
+
 }
