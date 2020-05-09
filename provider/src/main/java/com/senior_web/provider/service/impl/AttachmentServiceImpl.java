@@ -45,7 +45,7 @@ public class AttachmentServiceImpl implements AttachmentService, Serializable {
         // get project path
 //        File resourcefile = new File("src/main/resources/static/");
         //传到项目所在目录同级目录下
-        File resourcefile = new File("./tmp_file");
+        File resourcefile = new File("tmp_file");
         String projectRealPath = resourcefile.getAbsolutePath();
 //        String projectRealPath = env.getProperty("upload.path");
         // get the real path to store received images
@@ -56,11 +56,14 @@ public class AttachmentServiceImpl implements AttachmentService, Serializable {
             imageDir.mkdirs();
         }
         //上传的本地路径
+        boolean fileStoreTag = false;
         String localFilePath = realPath + File.separator + localFileName;
         try {
-            ((File) obj).renameTo(new File(localFilePath));
+             fileStoreTag= ((File) obj).renameTo(new File(localFilePath));
         } catch (IllegalStateException e) {
+            System.out.println("文件创建失败");
             e.printStackTrace();
+
             // log here
         }
         //上传的网络路径(配置了替换)
