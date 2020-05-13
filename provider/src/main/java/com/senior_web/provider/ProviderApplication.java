@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @SpringBootApplication
 @ImportResource({"classpath:spring-dubbo.xml"})
-@MapperScan("com.li.provider.mapper")
+@MapperScan("com.senior_web.provider.mapper")
 @EnableTransactionManagement
 public class ProviderApplication {
 

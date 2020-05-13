@@ -30,18 +30,12 @@ public class CustomerApplicationTests {
 
 
 
-    @Before
+    @Test
 	public void init(){
-    	System.out.println("开始单元测试");
+    	System.out.println("单元测试");
 	}
-	@After
-	public void after(){
-    	System.out.println("测试结束");
-	}
-	@Test
-	public void testUserService(){
-		Assert.assertSame("用户密码不对","555",userController.getUserById().getPassword());
-	}
+
+
 
 
 

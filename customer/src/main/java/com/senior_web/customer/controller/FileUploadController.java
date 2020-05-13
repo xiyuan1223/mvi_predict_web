@@ -27,31 +27,39 @@ public class FileUploadController implements Serializable {
     @RequestMapping(value = "/uploadImage", method = RequestMethod.POST)
     @ResponseBody
     public void receiveImage(@RequestPart("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String vicePath = "custempfile";
+        //传到项目所在目录同级目录下
+        File resourcefile = new File("tmp_file");
+        String projectRealPath = resourcefile.getAbsolutePath();
+//        String projectRealPath = env.getProperty("upload.path");
+        // get the real path to store received images
 
-
+        //存放文件的本地文件夹
+        String realPath = projectRealPath+File.separator+vicePath;
+        File imageDir = new File(realPath);
+        if(!imageDir.exists()) {//文件夹
+            imageDir.mkdirs();
+        }
         try {
             String fileName = file.getOriginalFilename();
-
+            String localFileName = System.currentTimeMillis() + "-" + fileName;
             String suffix = fileName.substring(fileName.lastIndexOf("."));
-            final File tmpFile = File.createTempFile(UUID.randomUUID().toString(), suffix);
+            //根据前缀和后缀创建一个空文件
+            localFileName = realPath+File.separator+localFileName;
+            File tempFile = new File(localFileName);
+            file.transferTo(tempFile);
+            System.out.println("custom写入文件："+localFileName);
+
             //对象流的传输需要序列化，不能直接getBytes,而应该使用ObjectOutputStrem.write()写入
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(byteArrayOutputStream);
-            oos.writeObject(tmpFile);
-//            oos.writeObject(null);//因为是按对象读取，所以加入空对象作为结束标志
-            oos.close();
 
-            deleteFile(tmpFile);
+//            file.transferTo(tempFile);
 
+            oos.writeObject(tempFile);
 
-//            byte[] bytes = byteArrayOutputStream.toByteArray();
-//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-//            ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
-//            Object obj = null;
-//            while((obj = ois.readObject())!=null){
-//                obj = (File)obj;
-//            }
-//            obj = ois.readObject();
+            oos.flush();
+
             Map<String, String> map = attachmentService.ckEditorUploadImage(byteArrayOutputStream.toByteArray(), file.getOriginalFilename());
             PrintWriter out = response.getWriter();
             String CKEditorFuncNum = request.getParameter("CKEditorFuncNum");
@@ -61,6 +69,7 @@ public class FileUploadController implements Serializable {
             out.println("window.parent.CKEDITOR.tools.callFunction("
                     + CKEditorFuncNum + ",'" + imgUrl + "','')");
             out.println("</script>");
+            deleteFile(tempFile);
         } catch (Exception e) {
             e.printStackTrace();
         }

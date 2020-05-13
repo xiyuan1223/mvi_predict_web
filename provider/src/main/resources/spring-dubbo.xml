@@ -20,8 +20,10 @@
     <bean id="userService" class="com.senior_web.provider.service.impl.UserImpl"/>
     <bean id="jobService" class="com.senior_web.provider.service.impl.JobImpl"/>
     <bean id="AttachmentService" class="com.senior_web.provider.service.impl.AttachmentServiceImpl"/>
+    <bean id="DataFlowControl" class="com.senior_web.provider.service.impl.DataFlowControl"/>
     <!-- declare the service interface to be exported -->
     <dubbo:service interface="com.senior_web.common.service.UserService" ref="userService"/>
     <dubbo:service interface="com.senior_web.common.service.JobService" ref="jobService"/>
     <dubbo:service interface="com.senior_web.common.service.AttachmentService" ref="AttachmentService"/>
+    <dubbo:service interface="com.senior_web.common.service.DataFlowControl" ref="DataFlowControl"/>
 </beans>
